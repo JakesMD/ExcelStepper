@@ -11,8 +11,8 @@ ExcelStepper stepper(2, 5);  // Create a new stepper motor on pins 2 and 5.
 void setup() {
     Serial.begin(9600);
 
-    stepper.begin();                          // Set up the stepper motor.
-    stepper.setDirection(COUNTER_CLOCKWISE);  // Set the direction of the motor.
+    stepper.begin();                                       // Set up the stepper motor.
+    stepper.setDirection(ExcelStepper::COUNTERCLOCKWISE);  // Set the direction of the motor.
 }
 
 void loop() {

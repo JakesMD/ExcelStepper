@@ -19,7 +19,7 @@ void ExcelStepper::begin() {
     _acceleration = 0;
 }
 
-void ExcelStepper::setDirection(DIRECTION direction) {
+void ExcelStepper::setDirection(Direction direction) {
     if (direction == CLOCKWISE) {
         digitalWrite(_dirPin, HIGH);
     } else {

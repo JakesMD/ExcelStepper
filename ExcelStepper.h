@@ -9,7 +9,7 @@
 class ExcelStepper {
    public:
     /// @brief An enum representing the possible directions of a stepper motor.
-    enum DIRECTION { CLOCKWISE, COUNTERCLOCKWISE };
+    enum Direction { CLOCKWISE, COUNTERCLOCKWISE };
 
     /// @brief The minimum speed the motor can reach before it stops in steps per second.
     ///
@@ -34,7 +34,7 @@ class ExcelStepper {
     /// @brief Sets the direction of the stepper motor.
     ///
     /// @param direction: The direction of the stepper motor.
-    void setDirection(DIRECTION direction);
+    void setDirection(Direction direction);
 
     /// @brief Accelerates the stepper motor to the target speed within the given number of steps.
     ///

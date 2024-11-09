@@ -22,7 +22,7 @@ void setup() {
     Serial.begin(9600);
 
     stepper.begin();                          // Set up the stepper motor.
-    stepper.setDirection(COUNTER_CLOCKWISE);  // Set the direction of the motor.
+    stepper.setDirection(ExcelStepper::COUNTERCLOCKWISE);  // Set the direction of the motor.
 }
 
 void loop() {
