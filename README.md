@@ -40,7 +40,7 @@ void loop() {
     stepper.runToTarget();
 
     // Jump from 1600 to 800 steps per second.
-    stepper.jumpToSpeed(800, 500);
+    stepper.jumpToSpeed(800);
     stepper.move(500);
     stepper.runToTarget();
 
