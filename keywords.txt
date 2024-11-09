@@ -1,0 +1,11 @@
+ExcelStepper		KEYWORD1
+begin			KEYWORD2
+setDirection		KEYWORD2
+accelerate		KEYWORD2
+decelerate		KEYWORD2
+move			KEYWORD2
+jumpToSpeed		KEYWORD2
+hasReachedTarget	KEYWORD2
+run			KEYWORD2
+runToTarget		KEYWORD2
+currentSpeed		KEYWORD2
