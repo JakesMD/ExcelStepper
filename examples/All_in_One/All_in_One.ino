@@ -21,7 +21,7 @@ void loop() {
 
     stepper.move(500);  // Moves 500 steps at 800 steps per second.
 
-    while (!run()) {                           // Loops until the motor has reached the target position.
+    while (!stepper.run()) {                   // Loops until the motor has reached the target position.
         Serial.println(stepper.currentSpeed);  // Large computations like serial prints may slow down the motor.
     }
 
