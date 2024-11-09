@@ -14,7 +14,7 @@ class ExcelStepper {
     /// @brief The minimum speed the motor can reach before it stops in steps per second.
     ///
     /// @attention This must not be 0.
-    static const byte DEFAULT_MIN_SPEED = 10;
+    static const byte DEFAULT_MIN_SPEED = 100;
 
     /// @brief The constructor.
     ///

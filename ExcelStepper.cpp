@@ -28,9 +28,11 @@ void ExcelStepper::setDirection(Direction direction) {
 }
 
 void ExcelStepper::accelerate(uint16_t targetSpeed, uint32_t steps) {
+    if (currentSpeed == 0) currentSpeed = _minSpeed;
+
     _targetSpeed = targetSpeed;
     _stepsRemaining = steps;
-    _acceleration = (static_cast<int32_t>(_targetSpeed - currentSpeed) * 100) / _stepsRemaining;
+    _acceleration = ((static_cast<int32_t>(_targetSpeed) - currentSpeed) / static_cast<int32_t>(_stepsRemaining)) * 100;
 }
 
 void ExcelStepper::decelerate(uint16_t targetSpeed, uint32_t steps) { accelerate(targetSpeed, steps); }
@@ -71,7 +73,9 @@ bool ExcelStepper::run() {
 
         if (!hasReachedTarget()) {
             _stepsRemaining--;
-            _setSpeed(_targetSpeed - (static_cast<int32_t>(_acceleration) * _stepsRemaining) / 100);
+            if (_acceleration != 0) {
+                _setSpeed(_targetSpeed - (_acceleration * static_cast<int32_t>(_stepsRemaining)) / 100);
+            }
         }
     }
 
