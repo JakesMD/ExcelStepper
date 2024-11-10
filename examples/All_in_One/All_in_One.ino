@@ -9,7 +9,7 @@
 ExcelStepper stepper(2, 5);  // Create a new stepper motor on pins 2 and 5.
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     stepper.begin();                                       // Set up the stepper motor.
     stepper.setDirection(ExcelStepper::COUNTERCLOCKWISE);  // Set the direction of the motor.
@@ -21,8 +21,8 @@ void loop() {
 
     stepper.move(500);  // Moves 500 steps at 800 steps per second.
 
-    while (!stepper.run()) {                   // Loops until the motor has reached the target position.
-        Serial.println(stepper.currentSpeed);  // Large computations like serial prints may slow down the motor.
+    while (!stepper.run()) {                     // Loops until the motor has reached the target position.
+        Serial.println(stepper.currentSpeed());  // Large computations like serial prints may slow down the motor.
     }
 
     // Accelerate from 800 to 1600 steps per second in 500 steps.

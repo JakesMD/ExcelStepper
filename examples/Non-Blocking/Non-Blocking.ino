@@ -28,7 +28,7 @@ void loop() {
         // Do whatever you want while the motor is moving.
     }
 
-    // Decelerate to 1600 steps per second in 500 steps.
+    // Decelerate to 0 steps per second in 500 steps.
     stepper.decelerate(0, 500);
     while (!stepper.run()) {
         // Do whatever you want while the motor is moving.
