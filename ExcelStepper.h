@@ -14,7 +14,7 @@ class ExcelStepper {
     /// @brief The minimum speed the motor can reach before it stops in steps per second.
     ///
     /// @attention This must not be 0.
-    static const byte DEFAULT_MIN_SPEED = 100;
+    static const uint16_t DEFAULT_MIN_SPEED = 100;
 
     /// @brief The constructor.
     ///
@@ -24,7 +24,7 @@ class ExcelStepper {
     /// @param dirPin: The pin number of the direction pin.
     /// @param minSpeed: The minimum speed the motor can reach before it stops in steps per second. Defaults to
     /// DEFAULT_MIN_SPEED.
-    ExcelStepper(byte stepPin, byte dirPin, byte minSpeed = DEFAULT_MIN_SPEED);
+    ExcelStepper(byte stepPin, byte dirPin, uint16_t minSpeed = DEFAULT_MIN_SPEED);
 
     /// @brief Sets up the stepper motor.
     ///
@@ -106,8 +106,8 @@ class ExcelStepper {
     /// @attention This function will block the program until the target position is reached.
     void runToTarget();
 
-    /// @brief The current speed of the motor in steps per second.
-    uint16_t currentSpeed;
+    /// @brief Returns current speed of the motor in steps per second.
+    uint16_t currentSpeed();
 
    private:
     /// An enum representing the state of a pulse.
@@ -120,13 +120,13 @@ class ExcelStepper {
     byte _dirPin;
 
     /// The minimum speed the motor can reach before it stops in steps per second.
-    byte _minSpeed;
+    uint16_t _minSpeed;
 
     /// The current state of the pulse.
     _EXCEL_STEPPER_PULSE_STATE _pulseState;
 
     /// The time of the last step in microseconds.
-    uint32_t _lastStepTime;
+    unsigned long _lastStepTime;
 
     /// The current delay between steps in microseconds.
     uint16_t _stepDuration;
@@ -143,8 +143,14 @@ class ExcelStepper {
     /// This is just a precalculated value of _stepDuration / 2.
     uint16_t _stepPulseDuration;
 
+    /// Whether the target is for the motor to completely stop.
+    bool _isTargetFullStop;
+
     /// The target speed of the motor in steps per second.
     uint16_t _targetSpeed;
+
+    /// The current speed of the motor in steps per second.
+    uint16_t _currentSpeed;
 
     /// The number of steps remaining to reach the target position.
     uint32_t _stepsRemaining;
@@ -152,8 +158,11 @@ class ExcelStepper {
     /// The amount to increase the speed by each step in steps per second.
     int32_t _acceleration;
 
-    /// Sets _currentSpeed and _stepDuration to the given speed.
+    /// Sets _currentSpeed and _stepDuration for the given speed.
     void _setSpeed(uint16_t speed);
+
+    /// Sets _targetSpeed and _isTargetFullStop for the given speed.
+    void _setTargetSpeed(uint16_t targetSpeed);
 
     /// Writes a digital value to a pin as fast as possible.
     ///

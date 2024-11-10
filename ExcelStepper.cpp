@@ -1,6 +1,6 @@
 #include "ExcelStepper.h"
 
-ExcelStepper::ExcelStepper(byte stepPin, byte dirPin, byte minSpeed) {
+ExcelStepper::ExcelStepper(byte stepPin, byte dirPin, uint16_t minSpeed) {
     _stepPin = stepPin;
     _dirPin = dirPin;
     _minSpeed = minSpeed;
@@ -14,9 +14,10 @@ void ExcelStepper::begin() {
 
     _pulseState = STEP;
     _lastStepTime = micros();
-    _setSpeed(0);
+    _setSpeed(_minSpeed);
     _stepsRemaining = 0;
     _acceleration = 0;
+    _isTargetFullStop = true;
 }
 
 void ExcelStepper::setDirection(Direction direction) {
@@ -28,11 +29,11 @@ void ExcelStepper::setDirection(Direction direction) {
 }
 
 void ExcelStepper::accelerate(uint16_t targetSpeed, uint32_t steps) {
-    if (currentSpeed == 0) currentSpeed = _minSpeed;
-
-    _targetSpeed = targetSpeed;
+    _setTargetSpeed(targetSpeed);
     _stepsRemaining = steps;
-    _acceleration = ((static_cast<int32_t>(_targetSpeed) - currentSpeed) / static_cast<int32_t>(_stepsRemaining)) * 100;
+    _acceleration = (static_cast<float>((static_cast<int32_t>(_targetSpeed) - static_cast<int32_t>(_currentSpeed))) /
+                     static_cast<float>(_stepsRemaining)) *
+                    100.0;
 }
 
 void ExcelStepper::decelerate(uint16_t targetSpeed, uint32_t steps) { accelerate(targetSpeed, steps); }
@@ -40,26 +41,22 @@ void ExcelStepper::decelerate(uint16_t targetSpeed, uint32_t steps) { accelerate
 void ExcelStepper::move(uint32_t steps) {
     _stepsRemaining = steps;
     _acceleration = 0;
-    _targetSpeed = currentSpeed;
 }
 
 void ExcelStepper::jumpToSpeed(uint16_t speed) {
     _stepsRemaining = 0;
     _acceleration = 0;
-    _targetSpeed = speed;
+    _setTargetSpeed(speed);
     _setSpeed(speed);
 }
 
 bool ExcelStepper::hasReachedTarget() { return _stepsRemaining == 0; }
 
 bool ExcelStepper::run() {
-    if (currentSpeed == 0 && _targetSpeed == 0) {
-        _stepsRemaining = 0;
-        return true;
-    }
+    if (_currentSpeed == _minSpeed && _isTargetFullStop) return true;
 
-    uint32_t currentTime = micros();
-    uint32_t timeElapsed = currentTime - _lastStepTime;
+    unsigned long currentTime = micros();
+    unsigned long timeElapsed = currentTime - _lastStepTime;
 
     if (_pulseState == STEP && timeElapsed >= _stepPulseDuration) {
         _fastDigitalWrite(_stepPin, LOW);
@@ -87,12 +84,30 @@ void ExcelStepper::runToTarget() {
     }
 }
 
-void ExcelStepper::_setSpeed(uint16_t speed) {
-    if (speed == currentSpeed) return;
+uint16_t ExcelStepper::currentSpeed() { return _currentSpeed; }
 
-    currentSpeed = speed;
-    _stepDuration = (speed > _minSpeed) ? 1000000 / speed : _maxStepDuration;
+void ExcelStepper::_setSpeed(uint16_t speed) {
+    if (speed == _currentSpeed) return;
+
+    if (speed <= _minSpeed) {
+        _currentSpeed = _minSpeed;
+        _stepDuration = _maxStepDuration;
+    } else {
+        _currentSpeed = speed;
+        _stepDuration = 1000000 / speed;
+    }
+
     _stepPulseDuration = _stepDuration / 2;
+}
+
+void ExcelStepper::_setTargetSpeed(uint16_t targetSpeed) {
+    if (targetSpeed < _minSpeed) {
+        _targetSpeed = _minSpeed;
+        _isTargetFullStop = true;
+    } else {
+        _targetSpeed = targetSpeed;
+        _isTargetFullStop = false;
+    }
 }
 
 void ExcelStepper::_fastDigitalWrite(byte pin, bool val) {
