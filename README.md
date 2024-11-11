@@ -106,9 +106,9 @@ Floating-point operations are computationally expensive. By limiting precision t
 
 #### Reducing Computation in `run()`
 To streamline `run()`, we calculate acceleration only once, when `accelerate()` is called. In `run()`, speed is updated using a straightforward formula:
-$$
-\text{speed} = \text{targetSpeed} - \frac{\text{acceleration} \times \text{stepsRemaining}}{100}
-$$
+```
+speed = targetSpeed - (acceleration x stepsRemaining) / 100
+```
 *(where all variables are integers)*
 
 This ensures the target speed is achieved within the specified number of steps, even if step intervals are slightly imprecise. Although this approach appears to implement constant acceleration, intervals between steps naturally decrease as speed increases.
