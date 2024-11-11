@@ -52,7 +52,7 @@ void loop() {
 ```
 
 ## Limitations
-- To improve speed ExcelStepper does not check for existing PWM on the step pin. Use with caution!
+- To improve speed, ExcelStepper does not check for existing PWM on the step pin. Use with caution!
 - Jumping to high speeds may not work due to physics. Use acceleration in such cases.
 - Very long accelerations may not work due to physics. Here are possible solutions:
     - Set a higher minumum speed.
@@ -61,10 +61,11 @@ void loop() {
         ```
     - Split your sequence into multiple accelerations where the first is the highest.
     - A mixture of both.
-- In order to reduce computation time changes in speed are not smooth. But see for yourself in the charts below.
+- In order to reduce computation time, changes in acceleration are not smooth. But see for yourself in the charts below.
+- ExcelStepper uses `micros()` for exact timing. `micros()` resets after about 70 minutes which may cause a step to trigger too soon.
 
 ## Charts
-The following charts were created using this demo sequence and a minumum speed of `100 steps/s`:
+The following charts were created using this demo sequence and a minimum speed of `100 steps/s`:
 ``` cpp
 #include "ExcelStepper.h"
 
@@ -88,3 +89,33 @@ void setup() {
 
 ### Velocity over time
 ![Stepper Motor Control Chart](images/v_over_t.svg)
+
+## Details
+
+### Minimum Speed Constraints
+At very low speeds, intervals between steps become long. For instance, a speed of 0 steps per second would require an infinite interval. Additionally, motors have a minimum operational speed below which they cannot function properly. To ensure reliability, we calculate speed such that it never drops below this minimum threshold. To stop the motor, we simply stop triggering steps.
+
+You can set the `minSpeed` in the constructor:
+``` cpp
+ExcelStepper stepper(2, 5, YOUR_MIN_SPEED);
+```
+
+### Increasing Speed Efficiency
+#### Minimizing Float Usage
+Floating-point operations are computationally expensive. By limiting precision to two decimal places, we can multiply values by 100 and work with integers, significantly improving performance.
+
+#### Reducing Computation in `run()`
+To streamline `run()`, we calculate acceleration only once, when `accelerate()` is called. In `run()`, speed is updated using a straightforward formula:
+$$
+\text{speed} = \text{targetSpeed} - \frac{\text{acceleration} \times \text{stepsRemaining}}{100}
+$$
+*(where all variables are integers)*
+
+This ensures the target speed is achieved within the specified number of steps, even if step intervals are slightly imprecise. Although this approach appears to implement constant acceleration, intervals between steps naturally decrease as speed increases.
+
+#### Optimizing `digitalWrite()` by Removing Redundant Checks
+Arduino's `digitalWrite()` includes various checks for safety, but these can slow down execution. By identifying and removing unnecessary checks, we can improve performance. One such check is for PWM on the pin. Since we assume the user won't enable PWM on a motor control pin, we can safely bypass this check for faster operation.
+
+## Contributions Welcome
+
+We're open to contributions, especially for improvements in speed and efficiency. Feel free to open issues or pull requests with optimizations, feature requests, or bug reports to help make this project even better. Your input is valuable and appreciated!
