@@ -1,0 +1,25 @@
+{
+    "name": "ExcelStepper",
+    "version": "1.0.0",
+    "description": "ExcelStepper is an excellent Arduino library for stepper motor control, offering simplicity, speed, and precise acceleration for smooth movement.",
+    "keywords": [
+        "stepper",
+        "motor",
+        "acceleration"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/JakesMD/ExcelStepper.git"
+    },
+    "authors": [
+        {
+            "name": "Jacob Drew",
+            "url": "https://github.com/JakesMD",
+            "maintainer": true
+        }
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/JakesMD/ExcelStepper",
+    "frameworks": "arduino",
+    "platforms": "*"
+}
