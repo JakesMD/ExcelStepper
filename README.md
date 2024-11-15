@@ -54,7 +54,7 @@ void loop() {
 ## Limitations
 - To improve speed, ExcelStepper does not check for existing PWM on the step pin. Use with caution!
 - Jumping to high speeds may not work due to physics. Use acceleration in such cases.
-- Very long accelerations may not work due to physics. Here are possible solutions:
+- Slow accelerations from standstill may not work due to physics. Here are possible solutions:
     - Set a higher minumum speed.
         ``` cpp
         ExcelStepper stepper(2, 5, YOUR_MIN_SPEED);
@@ -113,8 +113,12 @@ speed = targetSpeed - (acceleration x stepsRemaining) / 100
 
 This ensures the target speed is achieved within the specified number of steps, even if step intervals are slightly imprecise. Although this approach appears to implement constant acceleration, intervals between steps naturally decrease as speed increases.
 
-#### Optimizing `digitalWrite()` by Removing Redundant Checks
-Arduino's `digitalWrite()` includes various checks for safety, but these can slow down execution. By identifying and removing unnecessary checks, we can improve performance. One such check is for PWM on the pin. Since we assume the user won't enable PWM on a motor control pin, we can safely bypass this check for faster operation.
+#### Optimizing digitalWrite() by Eliminating Redundant Checks
+The Arduino `digitalWrite()` function includes several safety checks that ensure versatility but can slow down execution. By carefully removing certain checks that aren't essential for our specific application, we can improve performance.
+
+For instance, `digitalWrite()` checks if the pin is configured for PWM. Since we assume the user will not enable PWM on a motor control pin, we can bypass this check, speeding up the function.
+
+Additionally, `digitalWrite()` repeatedly fetches the port and bit for the pin on each call. To streamline this, we can retrieve and store these values in a begin() function, reducing repetitive lookups and further optimizing execution speed.
 
 ## Contributions Welcome
 

@@ -116,6 +116,12 @@ class ExcelStepper {
     /// The pin number of the step pin.
     byte _stepPin;
 
+    /// The bit mask of the step pin.
+    byte _stepPinBit;
+
+    /// The output register of the step pin.
+    volatile byte *_stepPinOut;
+
     /// The pin number of the direction pin.
     byte _dirPin;
 
@@ -167,7 +173,7 @@ class ExcelStepper {
     /// Writes a digital value to a pin as fast as possible.
     ///
     /// This no longer checks if PWM is enabled on the pin.
-    void _fastDigitalWrite(byte pin, bool value);
+    void _fastDigitalWrite(bool value);
 };
 
 #endif

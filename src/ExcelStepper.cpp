@@ -18,6 +18,11 @@ void ExcelStepper::begin() {
     _stepsRemaining = 0;
     _acceleration = 0;
     _isTargetFullStop = true;
+
+    uint8_t timer = digitalPinToTimer(_stepPin);
+    byte port = digitalPinToPort(_stepPin);
+    _stepPinBit = digitalPinToBitMask(_stepPin);
+    _stepPinOut = port == NOT_A_PIN ? portOutputRegister(port) : NULL;
 }
 
 void ExcelStepper::setDirection(Direction direction) {
@@ -59,12 +64,12 @@ bool ExcelStepper::run() {
     unsigned long timeElapsed = currentTime - _lastStepTime;
 
     if (_pulseState == STEP && timeElapsed >= _stepPulseDuration) {
-        _fastDigitalWrite(_stepPin, LOW);
+        _fastDigitalWrite(LOW);
         _pulseState = DELAY;
     }
 
     else if (_pulseState == DELAY && timeElapsed >= _stepDuration) {
-        _fastDigitalWrite(_stepPin, HIGH);
+        _fastDigitalWrite(HIGH);
         _pulseState = STEP;
         _lastStepTime = currentTime;
 
@@ -110,22 +115,16 @@ void ExcelStepper::_setTargetSpeed(uint16_t targetSpeed) {
     }
 }
 
-void ExcelStepper::_fastDigitalWrite(byte pin, bool val) {
-    byte bit = digitalPinToBitMask(pin);
-    byte port = digitalPinToPort(pin);
-    volatile byte *out;
-
-    if (port == NOT_A_PIN) return;
-
-    out = portOutputRegister(port);
+void ExcelStepper::_fastDigitalWrite(bool val) {
+    if (_stepPinOut == NULL) return;
 
     byte oldSREG = SREG;
     cli();
 
     if (val == LOW) {
-        *out &= ~bit;
+        *_stepPinOut &= ~_stepPinBit;
     } else {
-        *out |= bit;
+        *_stepPinOut |= _stepPinBit;
     }
 
     SREG = oldSREG;
