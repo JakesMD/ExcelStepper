@@ -19,7 +19,7 @@ void ExcelStepper::begin() {
     _acceleration = 0;
     _isTargetFullStop = true;
 
-    uint8_t timer = digitalPinToTimer(_stepPin);
+    digitalWrite(_stepPin, LOW);  // Turns off PWM timers.
     byte port = digitalPinToPort(_stepPin);
     _stepPinBit = digitalPinToBitMask(_stepPin);
     _stepPinOut = port == NOT_A_PIN ? portOutputRegister(port) : NULL;
