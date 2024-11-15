@@ -1,15 +1,13 @@
 #include "ExcelStepper.h"
 
-ExcelStepper::ExcelStepper(byte stepPin, byte dirPin, uint16_t minSpeed) {
-    _stepPin = stepPin;
-    _dirPin = dirPin;
+ExcelStepper::ExcelStepper(byte stepPin, byte dirPin, uint16_t minSpeed) : _stepPin(stepPin), _dirPin(dirPin) {
     _minSpeed = minSpeed;
     _maxStepDuration = 1000000 / _minSpeed;
 }
 
 void ExcelStepper::begin() {
-    pinMode(_stepPin, OUTPUT);
-    pinMode(_dirPin, OUTPUT);
+    _stepPin.begin();
+    _dirPin.begin();
     setDirection(CLOCKWISE);
 
     _pulseState = STEP;
@@ -18,18 +16,13 @@ void ExcelStepper::begin() {
     _stepsRemaining = 0;
     _acceleration = 0;
     _isTargetFullStop = true;
-
-    digitalWrite(_stepPin, LOW);  // Turns off PWM timers.
-    byte port = digitalPinToPort(_stepPin);
-    _stepPinBit = digitalPinToBitMask(_stepPin);
-    _stepPinOut = port == NOT_A_PIN ? portOutputRegister(port) : NULL;
 }
 
 void ExcelStepper::setDirection(Direction direction) {
     if (direction == CLOCKWISE) {
-        digitalWrite(_dirPin, HIGH);
+        _dirPin.write(HIGH);
     } else {
-        digitalWrite(_dirPin, LOW);
+        _dirPin.write(LOW);
     }
 }
 
@@ -64,12 +57,12 @@ bool ExcelStepper::run() {
     unsigned long timeElapsed = currentTime - _lastStepTime;
 
     if (_pulseState == STEP && timeElapsed >= _stepPulseDuration) {
-        _fastDigitalWrite(LOW);
+        _stepPin.write(LOW);
         _pulseState = DELAY;
     }
 
     else if (_pulseState == DELAY && timeElapsed >= _stepDuration) {
-        _fastDigitalWrite(HIGH);
+        _stepPin.write(HIGH);
         _pulseState = STEP;
         _lastStepTime = currentTime;
 
@@ -113,19 +106,4 @@ void ExcelStepper::_setTargetSpeed(uint16_t targetSpeed) {
         _targetSpeed = targetSpeed;
         _isTargetFullStop = false;
     }
-}
-
-void ExcelStepper::_fastDigitalWrite(bool val) {
-    if (_stepPinOut == NULL) return;
-
-    byte oldSREG = SREG;
-    cli();
-
-    if (val == LOW) {
-        *_stepPinOut &= ~_stepPinBit;
-    } else {
-        *_stepPinOut |= _stepPinBit;
-    }
-
-    SREG = oldSREG;
 }

@@ -1,3 +1,6 @@
+# 1.2.1 - 15. Nov 2024
+♻️ Swap out `fastDigitalWrite()` for `FastPin`
+
 # 1.2.0 - 15. Nov 2024
 ✨ Turn off PWM timers on step pin in `begin()`
 

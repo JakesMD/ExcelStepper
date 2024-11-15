@@ -2,6 +2,7 @@
 #define ExcelStepper_h
 
 #include <Arduino.h>
+#include <FastPin.h>
 
 /// @brief A class to accelerate stepper motors to desired speeds within a given number of steps.
 ///
@@ -113,17 +114,11 @@ class ExcelStepper {
     /// An enum representing the state of a pulse.
     enum _EXCEL_STEPPER_PULSE_STATE { STEP, DELAY };
 
-    /// The pin number of the step pin.
-    byte _stepPin;
+    /// The step pin.
+    FastWritePin _stepPin;
 
-    /// The bit mask of the step pin.
-    byte _stepPinBit;
-
-    /// The output register of the step pin.
-    volatile byte *_stepPinOut;
-
-    /// The pin number of the direction pin.
-    byte _dirPin;
+    /// The direction pin.
+    FastWritePin _dirPin;
 
     /// The minimum speed the motor can reach before it stops in steps per second.
     uint16_t _minSpeed;
@@ -169,11 +164,6 @@ class ExcelStepper {
 
     /// Sets _targetSpeed and _isTargetFullStop for the given speed.
     void _setTargetSpeed(uint16_t targetSpeed);
-
-    /// Writes a digital value to a pin as fast as possible.
-    ///
-    /// This no longer checks if PWM is enabled on the pin.
-    void _fastDigitalWrite(bool value);
 };
 
 #endif

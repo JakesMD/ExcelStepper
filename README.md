@@ -1,6 +1,6 @@
 # ExcelStepper
 
-**ExcelStepper** is an excellent Arduino library for stepper motor control, offering simplicity, speed, and precise acceleration for smooth movement.
+An excellent Arduino library for stepper motor control, offering simplicity, speed, and precise acceleration for smooth movement.
 
 
 ## Features
@@ -100,7 +100,7 @@ You can set the `minSpeed` in the constructor:
 ExcelStepper stepper(2, 5, YOUR_MIN_SPEED);
 ```
 
-### Increasing Speed Efficiency
+### How We Increased Speed Efficiency
 #### Minimizing Float Usage
 Floating-point operations are computationally expensive. By limiting precision to two decimal places, we can multiply values by 100 and work with integers, significantly improving performance.
 
@@ -119,6 +119,8 @@ The Arduino `digitalWrite()` function includes several safety checks that ensure
 For instance, `digitalWrite()` includes a check to determine if the pin is configured for PWM. Since we assume the user will not enable PWM on a motor control pin, this check can be moved to the `begin()` function. By handling it once during initialization, we can safely bypass it in `digitalWrite()`, significantly improving the function's execution speed.
 
 Additionally, `digitalWrite()` repeatedly fetches the port and bit for the pin on each call. To streamline this, we can retrieve and store these values in the `begin()` function, reducing repetitive lookups and further optimizing execution speed.
+
+We wrote another library to achieve this called [FastPin](https://github.com/JakesMD/FastPin).
 
 ## Contributions Welcome
 
